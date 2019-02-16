@@ -41,7 +41,7 @@ def chi_square_test(data, dist):
             frequency.pop(i)
 
     # Perform chi-square test and print results
-    test_statistic, p_value = stats.chisquare(frequency, expected_frequency, ddof=2)
+    test_statistic, p_value = stats.chisquare(frequency, expected_frequency, ddof=0)
     print('Test statistic: %f \tP-value: %f' % (test_statistic, p_value))
     result = 'confirms' if p_value > 0.05 else 'rejects'
     print('Conclusion: ' + result + ' the null hypothesis with a p value of ' + str(p_value))
