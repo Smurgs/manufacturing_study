@@ -11,8 +11,10 @@ class Inspector(object):
         self.time_blocked = 0
         self.start_of_block = 0
         self.component_type = 0
+        self.idle = True
 
     def start(self):
+        self.idle = False
         self.time_blocked = self.time_blocked + (time - self.start_of_block)
         if self.name == 'insp1':
             self.component_type = 1
@@ -27,6 +29,7 @@ class Inspector(object):
         print('%.3f\t%s starting to inspect component %d' % (time, self.name, self.component_type))
 
     def complete(self):
+        self.idle = True
         print('%.3f\t%s finished inspecting component %d' % (time, self.name, self.component_type))
         self.start_of_block = time
         if self.name == 'insp1':
@@ -71,7 +74,9 @@ class Inspector(object):
                 event_queue.append((time, self.start))
 
     def close(self):
-        self.time_blocked = self.time_blocked + (time - self.start_of_block)
+        if self.idle:
+            self.time_blocked = self.time_blocked + (time - self.start_of_block)
+
 
 
 class Buffer(object):
