@@ -49,7 +49,7 @@ def chi_square_test(data, dist):
 
 if __name__ == '__main__':
 
-    input_files = ['servinsp1.txt', 'servinsp22.txt', 'servinsp23.txt', 'ws1.txt', 'ws2.txt', 'ws3.txt']
+    input_files = ['empirical_data/servinsp1.txt', 'empirical_data/servinsp22.txt', 'empirical_data/servinsp23.txt', 'empirical_data/ws1.txt', 'empirical_data/ws2.txt', 'empirical_data/ws3.txt']
     for filename in input_files:
 
         # Load data
