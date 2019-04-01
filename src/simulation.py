@@ -37,7 +37,7 @@ def main():
     inspector1.start(time)
     inspector2.start(time)
 
-    INTERVAL = 100
+    INTERVAL = 10
     total_list_product_1 = []
     total_list_product_2 = []
     total_list_product_3 = []
@@ -45,6 +45,7 @@ def main():
     event_time_1 = []
     event_time_2 = []
     event_time_3 = []
+    event_time_4 = []
 
     previous_entry_1 = 0
     previous_entry_2 = 0
@@ -54,7 +55,16 @@ def main():
     i = 1
     difference_value = 0
 
-    while time < 10000:
+    buffer_sizes_11 = []
+    buffer_sizes_21  = []
+    buffer_sizes_22 = []
+    buffer_sizes_31 = []
+    buffer_sizes_33 = []
+
+
+    previous_entry_4 = 0
+
+    while time < 1000:
         # Sort event list
         event_queue.sort(key=lambda x: x[0])
 
@@ -67,30 +77,42 @@ def main():
         # Execute event
         event[1](time)
 
-        print("Previous time: " + str(previous_time) + " Current time: " + str(time))
-
-        # Record completed products every given interval
-        # JOE's genius time logic
-        if((time + previous_time ) > INTERVAL * i):
-            previous_time = (time + previous_time) - (INTERVAL * i)
-            event_time_1.append(time)
-            event_time_2.append(time)
-            event_time_3.append(time)
-            total_list_product_1.append(len(ws1.completed_components) - previous_entry_1)
-            total_list_product_2.append(len(ws2.completed_components) - previous_entry_2)
-            total_list_product_3.append(len(ws3.completed_components) - previous_entry_3)
-            previous_entry_1 = sum(total_list_product_1)
-            previous_entry_2 = sum(total_list_product_2)
-            previous_entry_3 = sum(total_list_product_3)
-            i += 1
-        else:
-            previous_time += time
-
 
         # Start workstations if they are not idle and the buffers are ready
         for ws in [ws1, ws2, ws3]:
             if ws.is_idle() and ws.components_ready():
                 ws.start_work(time)
+
+        print("Previous time: " + str(previous_time) + " Current time: " + str(time))
+
+        # Record completed products every given interval
+        # JOE's genius time logic
+        if ((time + previous_time) > INTERVAL * i):
+            previous_time = (time + previous_time) - (INTERVAL * i)
+            event_time_1.append(time)
+            event_time_2.append(time)
+            event_time_3.append(time)
+
+            total_list_product_1.append(len(ws1.completed_components) - previous_entry_1)
+            total_list_product_2.append(len(ws2.completed_components) - previous_entry_2)
+            total_list_product_3.append(len(ws3.completed_components) - previous_entry_3)
+
+            event_time_4.append(time)
+            buffer_sizes_11.append(b11.size())
+            buffer_sizes_22.append(b22.size())
+            buffer_sizes_33.append(b33.size())
+            buffer_sizes_21.append(b21.size())
+            buffer_sizes_31.append(b31.size())
+
+            previous_entry_1 = sum(total_list_product_1)
+            previous_entry_2 = sum(total_list_product_2)
+            previous_entry_3 = sum(total_list_product_3)
+
+            # previous_entry_4 = sum(buffer_sizes_11)
+            i += 1
+        else:
+            previous_time += time
+
 
         previous_time = time
 
@@ -103,31 +125,64 @@ def main():
 
 
     # Plot for buffer_1_1
-    event_time_11, buffer_sizes_11 = zip(*b11.change_log)
-    event_time_21, buffer_sizes_21 = zip(*b21.change_log)
-    event_time_22, buffer_sizes_22 = zip(*b22.change_log)
-    # avg_queue_items = sum(buffer_sizes)/(len(buffer_sizes))
-
-    print(total_list_product_1)
+    # event_time_11, buffer_sizes_11 = zip(*b11.change_log)
+    # event_time_21, buffer_sizes_21 = zip(*b21.change_log)
+    # event_time_22, buffer_sizes_22 = zip(*b22.change_log)
 
 
     plt.subplot(2, 2, 1)
     plt.plot(event_time_1, total_list_product_1, 'r')
     plt.title("Product 1 every " + str(INTERVAL) + " minutes")
     plt.xlabel("Time")
-    plt.ylabel("Buffer Size")
+    plt.ylabel("Throughput")
 
     plt.subplot(2, 2, 2)
     plt.plot(event_time_2, total_list_product_2, 'b')
     plt.title("Product 2 every " + str(INTERVAL) + " minutes")
     plt.xlabel("Time")
-    plt.ylabel("Buffer Size")
+    plt.ylabel("Throughput")
+
 
     plt.subplot(2, 2, 3)
     plt.plot(event_time_3, total_list_product_3, 'g')
     plt.title("Product 3 every " + str(INTERVAL) + " minutes")
     plt.xlabel("Time")
-    plt.ylabel("Buffer Size")
+    plt.ylabel("Throughput")
+
+
+    plt.show()
+
+    plt.subplot(2, 2, 1)
+    plt.plot(event_time_4, buffer_sizes_11, 'g')
+    plt.title("Buffer 1_1 every " + str(INTERVAL) + " minutes")
+    plt.xlabel("Time")
+    plt.ylabel("Throughput")
+
+    plt.subplot(2, 2, 2)
+    plt.plot(event_time_4, buffer_sizes_21, 'g')
+    plt.title("Buffer 2_1 every " + str(INTERVAL) + " minutes")
+    plt.xlabel("Time")
+    plt.ylabel("Throughput")
+
+    plt.subplot(2, 2, 3)
+    plt.plot(event_time_4, buffer_sizes_22, 'g')
+    plt.title("Buffer 2_2 every " + str(INTERVAL) + " minutes")
+    plt.xlabel("Time")
+    plt.ylabel("Throughput")
+
+    plt.show()
+
+    plt.subplot(2, 2, 1)
+    plt.plot(event_time_4, buffer_sizes_31, 'g')
+    plt.title("Buffer 3_1 every " + str(INTERVAL) + " minutes")
+    plt.xlabel("Time")
+    plt.ylabel("Throughput")
+
+    plt.subplot(2, 2, 2)
+    plt.plot(event_time_4, buffer_sizes_33, 'g')
+    plt.title("Buffer 3_3 every " + str(INTERVAL) + " minutes")
+    plt.xlabel("Time")
+    plt.ylabel("Throughput")
 
     plt.show()
 
