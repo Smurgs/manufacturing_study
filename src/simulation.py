@@ -87,7 +87,6 @@ def main():
             previous_time += time
 
 
-
         # Start workstations if they are not idle and the buffers are ready
         for ws in [ws1, ws2, ws3]:
             if ws.is_idle() and ws.components_ready():
@@ -112,12 +111,12 @@ def main():
     print(total_list_product_1)
 
     # plt.title("Product 1 Throughput every " + str(INTERVAL) + " minutes plot with respect to time")
-    #plt.subplot(2, 2, 1)
+    plt.subplot(2, 2, 1)
     plt.plot(event_time_1, total_list_product_1, 'r')
-   # plt.subplot(2, 2, 2)
-   # plt.plot(event_time_2, total_list_product_2, 'b')
-   # plt.subplot(2, 2, 3)
-   # plt.plot(event_time_3, total_list_product_3, 'g')
+    plt.subplot(2, 2, 2)
+    plt.plot(event_time_2, total_list_product_2, 'b')
+    plt.subplot(2, 2, 3)
+    plt.plot(event_time_3, total_list_product_3, 'g')
     plt.xlabel("Time")
     plt.ylabel("Buffer Size")
     plt.ylim([0, 4])
