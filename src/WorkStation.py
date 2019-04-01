@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 class WorkStation(object):
     def __init__(self, name, rv, buffers, event_queue):
         self.name = name
