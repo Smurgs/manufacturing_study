@@ -110,16 +110,25 @@ def main():
 
     print(total_list_product_1)
 
-    # plt.title("Product 1 Throughput every " + str(INTERVAL) + " minutes plot with respect to time")
+
     plt.subplot(2, 2, 1)
     plt.plot(event_time_1, total_list_product_1, 'r')
-    plt.subplot(2, 2, 2)
-    plt.plot(event_time_2, total_list_product_2, 'b')
-    plt.subplot(2, 2, 3)
-    plt.plot(event_time_3, total_list_product_3, 'g')
+    plt.title("Product 1 every " + str(INTERVAL) + " minutes")
     plt.xlabel("Time")
     plt.ylabel("Buffer Size")
-    plt.ylim([0, 4])
+
+    plt.subplot(2, 2, 2)
+    plt.plot(event_time_2, total_list_product_2, 'b')
+    plt.title("Product 2 every " + str(INTERVAL) + " minutes")
+    plt.xlabel("Time")
+    plt.ylabel("Buffer Size")
+
+    plt.subplot(2, 2, 3)
+    plt.plot(event_time_3, total_list_product_3, 'g')
+    plt.title("Product 3 every " + str(INTERVAL) + " minutes")
+    plt.xlabel("Time")
+    plt.ylabel("Buffer Size")
+
     plt.show()
 
     avg_sys_time = np.mean([x.system_time for x in ws1.completed_components])
