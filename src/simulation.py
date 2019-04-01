@@ -14,6 +14,8 @@ from src.Buffer import Buffer
 from src.WorkStation import WorkStation
 
 
+
+
 # Initialization
 time = 0.0
 event_queue = []
@@ -27,6 +29,7 @@ inspector2 = Inspector('insp2', [stats.expon(loc=0.13, scale=15.41), stats.expon
 ws1 = WorkStation('ws1', stats.expon(loc=0.01, scale=4.60), [b11], event_queue)
 ws2 = WorkStation('ws2', stats.expon(loc=0.09, scale=11.00), [b21, b22], event_queue)
 ws3 = WorkStation('ws3', stats.expon(loc=0.10, scale=8.69), [b31, b33], event_queue)
+REPLICATIONS = 6
 
 
 def main():
@@ -113,7 +116,7 @@ def main():
         else:
             previous_time += time
 
-
+        plt.axvline
         previous_time = time
 
     print('\nSimulation complete')
@@ -122,6 +125,10 @@ def main():
         print('%s spent %.2f time units blocked' % (insp.name, insp.time_blocked))
     for ws in [ws1, ws2, ws3]:
         print('%s completed %d products' % (ws.name, ws.components_completed))
+    print('\nConfidence Intervals')
+    print("Confidence Interval for Product 1" + str(confidence_interval(total_list_product_1)))
+    print("Confidence Interval for Product 2" + str(confidence_interval(total_list_product_2)))
+    print("Confidence Interval for Product 3" + str(confidence_interval(total_list_product_3)))
 
 
     # Plot for buffer_1_1
@@ -148,7 +155,6 @@ def main():
     plt.title("Product 3 every " + str(INTERVAL) + " minutes")
     plt.xlabel("Time")
     plt.ylabel("Throughput")
-
 
     plt.show()
 
@@ -193,8 +199,17 @@ def main():
     print(avg_sys_time * avg_arrival_time)
 
 
+
+def confidence_interval(data, condience=0.95):
+    a = 1.0 * np.array(data)
+    n = len(a)
+    m, se = np.mean(a), stats.sem(a)
+    h = se * stats.t.ppf((1 + condience) / 2., n-1)
+    return m, m-h, m+h
+
+
 if __name__ == '__main__':
     i = 0
-    main()
-    # while i < REPLICATIONS:
-    #     main()
+    # main()
+    while i < REPLICATIONS:
+        main()
