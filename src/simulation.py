@@ -37,7 +37,7 @@ def main():
     inspector1.start(time)
     inspector2.start(time)
 
-    INTERVAL = 10
+    INTERVAL = 5
     total_list_product_1 = []
     total_list_product_2 = []
     total_list_product_3 = []
@@ -64,7 +64,7 @@ def main():
 
     previous_entry_4 = 0
 
-    while time < 1000:
+    while time < 10000:
         # Sort event list
         event_queue.sort(key=lambda x: x[0])
 
