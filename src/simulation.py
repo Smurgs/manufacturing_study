@@ -86,11 +86,13 @@ def main():
             if ws.is_idle() and ws.components_ready():
                 ws.start_work(time)
 
-        print("Previous time: " + str(previous_time) + " Current time: " + str(time))
+
 
         # Record completed products every given interval
         # JOE's genius time logic
         if ((time + previous_time) > INTERVAL * i):
+
+
             previous_time = (time + previous_time) - (INTERVAL * i)
             event_time_1.append(time)
             event_time_2.append(time)
@@ -101,11 +103,11 @@ def main():
             total_list_product_3.append(len(ws3.completed_components) - previous_entry_3)
 
             event_time_4.append(time)
-            buffer_sizes_11.append(b11.size())
-            buffer_sizes_22.append(b22.size())
-            buffer_sizes_33.append(b33.size())
-            buffer_sizes_21.append(b21.size())
-            buffer_sizes_31.append(b31.size())
+            # buffer_sizes_11.append(b11.size())
+            # buffer_sizes_22.append(b22.size())
+            # buffer_sizes_33.append(b33.size())
+            # buffer_sizes_21.append(b21.size())
+            # buffer_sizes_31.append(b31.size())
 
             previous_entry_1 = sum(total_list_product_1)
             previous_entry_2 = sum(total_list_product_2)
@@ -116,7 +118,6 @@ def main():
         else:
             previous_time += time
 
-        plt.axvline
         previous_time = time
 
     print('\nSimulation complete')
