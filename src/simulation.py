@@ -5,8 +5,8 @@ import scipy.stats as stats
 from numpy import *
 import math
 import matplotlib.pyplot as plt
-from matplotlib import interactive
-interactive(True)
+#from matplotlib import interactive
+#interactive(True)
 
 
 from src.Inspector import Inspector
@@ -30,6 +30,11 @@ ws1 = WorkStation('ws1', stats.expon(loc=0.01, scale=4.60), [b11], event_queue)
 ws2 = WorkStation('ws2', stats.expon(loc=0.09, scale=11.00), [b21, b22], event_queue)
 ws3 = WorkStation('ws3', stats.expon(loc=0.10, scale=8.69), [b31, b33], event_queue)
 REPLICATIONS = 6
+INTERVAL = 5
+product_count = 0
+throughput = []
+total_idle_time = 0
+idle_probability = []
 
 
 def main():
@@ -40,34 +45,10 @@ def main():
     inspector1.start(time)
     inspector2.start(time)
 
-    INTERVAL = 5
-    total_list_product_1 = []
-    total_list_product_2 = []
-    total_list_product_3 = []
+    # Insert interval elapsed event into queue
+    event_queue.append((time + INTERVAL, elapsed_interval))
 
-    event_time_1 = []
-    event_time_2 = []
-    event_time_3 = []
-    event_time_4 = []
-
-    previous_entry_1 = 0
-    previous_entry_2 = 0
-    previous_entry_3 = 0
-
-    previous_time = 0
-    i = 1
-    difference_value = 0
-
-    buffer_sizes_11 = []
-    buffer_sizes_21  = []
-    buffer_sizes_22 = []
-    buffer_sizes_31 = []
-    buffer_sizes_33 = []
-
-
-    previous_entry_4 = 0
-
-    while time < 10000:
+    while time < 100000:
         # Sort event list
         event_queue.sort(key=lambda x: x[0])
 
@@ -86,38 +67,38 @@ def main():
             if ws.is_idle() and ws.components_ready():
                 ws.start_work(time)
 
-        print("Previous time: " + str(previous_time) + " Current time: " + str(time))
+        # print("Previous time: " + str(previous_time) + " Current time: " + str(time))
 
         # Record completed products every given interval
         # JOE's genius time logic
-        if ((time + previous_time) > INTERVAL * i):
-            previous_time = (time + previous_time) - (INTERVAL * i)
-            event_time_1.append(time)
-            event_time_2.append(time)
-            event_time_3.append(time)
-
-            total_list_product_1.append(len(ws1.completed_components) - previous_entry_1)
-            total_list_product_2.append(len(ws2.completed_components) - previous_entry_2)
-            total_list_product_3.append(len(ws3.completed_components) - previous_entry_3)
-
-            event_time_4.append(time)
-            buffer_sizes_11.append(b11.size())
-            buffer_sizes_22.append(b22.size())
-            buffer_sizes_33.append(b33.size())
-            buffer_sizes_21.append(b21.size())
-            buffer_sizes_31.append(b31.size())
-
-            previous_entry_1 = sum(total_list_product_1)
-            previous_entry_2 = sum(total_list_product_2)
-            previous_entry_3 = sum(total_list_product_3)
-
-            # previous_entry_4 = sum(buffer_sizes_11)
-            i += 1
-        else:
-            previous_time += time
-
-        plt.axvline
-        previous_time = time
+        # if ((time + previous_time) > INTERVAL * i):
+        #     previous_time = (time + previous_time) - (INTERVAL * i)
+        #     event_time_1.append(time)
+        #     event_time_2.append(time)
+        #     event_time_3.append(time)
+        #
+        #     total_list_product_1.append(len(ws1.completed_components) - previous_entry_1)
+        #     total_list_product_2.append(len(ws2.completed_components) - previous_entry_2)
+        #     total_list_product_3.append(len(ws3.completed_components) - previous_entry_3)
+        #
+        #     event_time_4.append(time)
+        #     buffer_sizes_11.append(b11.size())
+        #     buffer_sizes_22.append(b22.size())
+        #     buffer_sizes_33.append(b33.size())
+        #     buffer_sizes_21.append(b21.size())
+        #     buffer_sizes_31.append(b31.size())
+        #
+        #     previous_entry_1 = sum(total_list_product_1)
+        #     previous_entry_2 = sum(total_list_product_2)
+        #     previous_entry_3 = sum(total_list_product_3)
+        #
+        #     # previous_entry_4 = sum(buffer_sizes_11)
+        #     i += 1
+        # else:
+        #     previous_time += time
+        #
+        # plt.axvline
+        # previous_time = time
 
     print('\nSimulation complete')
     for insp in [inspector1, inspector2]:
@@ -125,71 +106,22 @@ def main():
         print('%s spent %.2f time units blocked' % (insp.name, insp.time_blocked))
     for ws in [ws1, ws2, ws3]:
         print('%s completed %d products' % (ws.name, ws.components_completed))
-    print('\nConfidence Intervals')
-    print("Confidence Interval for Product 1" + str(confidence_interval(total_list_product_1)))
-    print("Confidence Interval for Product 2" + str(confidence_interval(total_list_product_2)))
-    print("Confidence Interval for Product 3" + str(confidence_interval(total_list_product_3)))
+    print('\nThroughput')
+    print(throughput)
+    print('Confidence')
+    print(confidence_interval(throughput))
 
+    print('\nIdle Probability')
+    print(idle_probability)
+    print('Confidence')
+    print(confidence_interval(idle_probability))
 
-    # Plot for buffer_1_1
-    # event_time_11, buffer_sizes_11 = zip(*b11.change_log)
-    # event_time_21, buffer_sizes_21 = zip(*b21.change_log)
-    # event_time_22, buffer_sizes_22 = zip(*b22.change_log)
-
-
-    plt.subplot(2, 2, 1)
-    plt.plot(event_time_1, total_list_product_1, 'r')
-    plt.title("Product 1 every " + str(INTERVAL) + " minutes")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-
-    plt.subplot(2, 2, 2)
-    plt.plot(event_time_2, total_list_product_2, 'b')
-    plt.title("Product 2 every " + str(INTERVAL) + " minutes")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-
-
-    plt.subplot(2, 2, 3)
-    plt.plot(event_time_3, total_list_product_3, 'g')
-    plt.title("Product 3 every " + str(INTERVAL) + " minutes")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-
+    # Plot throughput
+    plt.plot(throughput)
     plt.show()
 
-    plt.subplot(2, 2, 1)
-    plt.plot(event_time_4, buffer_sizes_11, 'g')
-    plt.title("Buffer 1_1 every " + str(INTERVAL) + " minutes")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-
-    plt.subplot(2, 2, 2)
-    plt.plot(event_time_4, buffer_sizes_21, 'g')
-    plt.title("Buffer 2_1 every " + str(INTERVAL) + " minutes")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-
-    plt.subplot(2, 2, 3)
-    plt.plot(event_time_4, buffer_sizes_22, 'g')
-    plt.title("Buffer 2_2 every " + str(INTERVAL) + " minutes")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-
-    plt.show()
-
-    plt.subplot(2, 2, 1)
-    plt.plot(event_time_4, buffer_sizes_31, 'g')
-    plt.title("Buffer 3_1 every " + str(INTERVAL) + " minutes")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-
-    plt.subplot(2, 2, 2)
-    plt.plot(event_time_4, buffer_sizes_33, 'g')
-    plt.title("Buffer 3_3 every " + str(INTERVAL) + " minutes")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-
+    # Plot throughput
+    plt.plot(idle_probability)
     plt.show()
 
     avg_sys_time = np.mean([x.system_time for x in ws1.completed_components])
@@ -199,17 +131,32 @@ def main():
     print(avg_sys_time * avg_arrival_time)
 
 
+def elapsed_interval(t):
+    global product_count
+    global throughput
+    global total_idle_time
+    global idle_probability
+    global event_queue
 
-def confidence_interval(data, condience=0.95):
+    # Get throughput
+    product_count = len(ws1.completed_components) + len(ws2.completed_components) + len(ws3.completed_components)
+    throughput.append(product_count / t)
+
+    # Get idle time probability
+    total_idle_time = inspector1.time_blocked + inspector2.time_blocked
+    idle_probability.append(total_idle_time / t)
+
+    # Set next data collection event
+    event_queue.append((t + INTERVAL, elapsed_interval))
+
+
+def confidence_interval(data, confidence=0.95):
     a = 1.0 * np.array(data)
     n = len(a)
     m, se = np.mean(a), stats.sem(a)
-    h = se * stats.t.ppf((1 + condience) / 2., n-1)
+    h = se * stats.t.ppf((1 + confidence) / 2., n - 1)
     return m, m-h, m+h
 
 
 if __name__ == '__main__':
-    i = 0
-    # main()
-    while i < REPLICATIONS:
-        main()
+    main()
