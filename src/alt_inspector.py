@@ -3,7 +3,7 @@ import random
 from src.Component import Component
 
 
-class Inspector(object):
+class AltInspector(object):
     def __init__(self, name, rv, event_queue, b11, b21, b31, b22, b33):
         self.name = name
         self.rv = rv
@@ -37,23 +37,28 @@ class Inspector(object):
         self.idle = True
         print('%.3f\t%s finished inspecting component %d' % (time, self.name, self.component.type))
         self.start_of_block = time
-        # Routing Algorithm (Shortest Path)
+        # Routing Algorithm (Round Robin)
         if self.name == 'insp1':
-            if self.b11.size() <= self.b21.size() and self.b11.size() <= self.b31.size():
+            if not self.b11.sliced:
                 if self.b11.size() >= 2:
                     self.b11.blockingFlag = True
                     self.b11.blockingEvent = self.unblocked
                 else:
                     self.b11.add(self.component, time)
                     self.event_queue.append((time, self.start))
+                    self.b11.sliced = True
+                    self.b31.sliced = False
+                    print("Added to buffer b11")
 
-            elif self.b21.size() <= self.b31.size():
+            elif not self.b21.sliced:
                 if self.b21.size() >= 2:
                     self.b21.blockingFlag = True
                     self.b21.blockingEvent = self.unblocked
                 else:
                     self.b21.add(self.component, time)
                     self.event_queue.append((time, self.start))
+                    self.b21.sliced = True
+                    print("Added to buffer b21")
 
             else:
                 if self.b31.size() >= 2:
@@ -62,6 +67,10 @@ class Inspector(object):
                 else:
                     self.b31.add(self.component, time)
                     self.event_queue.append((time, self.start))
+                    self.b31.sliced = True
+                    self.b11.sliced = False
+                    self.b21.sliced = False
+                    print("Added to buffer b31")
 
         elif self.component.type == 2:
             if self.b22.size() >= 2:

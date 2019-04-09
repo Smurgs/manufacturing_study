@@ -7,6 +7,7 @@ class Buffer(object):
         self.queue = deque()
         self.blockingFlag = False
         self.blockingEvent = None
+        self.sliced = False
         self.last_arrival = 0
         self.inter_arrival_times = []
         self.change_log = []

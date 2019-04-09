@@ -7,6 +7,7 @@ import math
 import matplotlib.pyplot as plt
 
 from src.Inspector import Inspector
+from src.alt_inspector import AltInspector
 from src.Buffer import Buffer
 from src.WorkStation import WorkStation
 
@@ -21,8 +22,8 @@ b21 = Buffer('ws2_c1')
 b31 = Buffer('ws3_c1')
 b22 = Buffer('ws2_c2')
 b33 = Buffer('ws3_c3')
-inspector1 = Inspector('insp1', [stats.expon(loc=0.09, scale=10.27)], event_queue, b11, b21, b31, b22, b33)
-inspector2 = Inspector('insp2', [stats.expon(loc=0.13, scale=15.41), stats.expon(loc=0.03, scale=20.60)], event_queue, b11, b21, b31, b22, b33)
+inspector1 = AltInspector('insp1', [stats.expon(loc=0.09, scale=10.27)], event_queue, b11, b21, b31, b22, b33)
+inspector2 = AltInspector('insp2', [stats.expon(loc=0.13, scale=15.41), stats.expon(loc=0.03, scale=20.60)], event_queue, b11, b21, b31, b22, b33)
 ws1 = WorkStation('ws1', stats.expon(loc=0.01, scale=4.60), [b11], event_queue)
 ws2 = WorkStation('ws2', stats.expon(loc=0.09, scale=11.00), [b21, b22], event_queue)
 ws3 = WorkStation('ws3', stats.expon(loc=0.10, scale=8.69), [b31, b33], event_queue)
