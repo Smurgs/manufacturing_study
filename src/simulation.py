@@ -35,6 +35,7 @@ product_count = 0
 throughput = []
 total_idle_time = 0
 idle_probability = []
+TIME_UNITS = 100000
 
 
 def main():
@@ -48,7 +49,7 @@ def main():
     # Insert interval elapsed event into queue
     event_queue.append((time + INTERVAL, elapsed_interval))
 
-    while time < 100000:
+    while time < TIME_UNITS:
         # Sort event list
         event_queue.sort(key=lambda x: x[0])
 
