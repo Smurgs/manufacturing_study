@@ -68,10 +68,15 @@ class AltInspector(object):
                     print('%.3f\tAdded to buffer b31' % time)
                     break
 
+                self.next_buffer+=1
+
             if not self.component_placed:
                 self.b11.blockingFlag = True
                 self.b11.blockingEvent = self.unblocked
+                self.next_buffer+=1
                 print('%.3f\tWaiting for Buffer 11 to clear' % time)
+
+
 
         elif self.component.type == 2:
             if self.b22.size() >= 2:
