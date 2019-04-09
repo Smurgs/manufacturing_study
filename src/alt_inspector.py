@@ -51,20 +51,22 @@ class AltInspector(object):
                     self.b11.add(self.component, time)
                     self.event_queue.append((time, self.start))
                     self.component_placed = True
-                    break
                     print('%.3f\tAdded to buffer b11' % time)
+                    break
+
                 elif self.next_buffer == 2 and not self.b21.size() >= 2:
                     self.b21.add(self.component, time)
                     self.event_queue.append((time, self.start))
                     self.component_placed = True
-                    break
                     print('%.3f\tAdded to buffer b21' % time)
+                    break
+
                 elif self.next_buffer == 3 and not self.b31.size() >= 2:
                     self.b31.add(self.component, time)
                     self.event_queue.append((time, self.start))
                     self.component_placed = True
-                    break
                     print('%.3f\tAdded to buffer b31' % time)
+                    break
 
             if not self.component_placed:
                 self.b11.blockingFlag = True
