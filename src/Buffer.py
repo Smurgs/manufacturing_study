@@ -30,3 +30,6 @@ class Buffer(object):
             self.blockingEvent(self, time)
             self.blockingFlag = False
         return component
+
+    def reset(self):
+        self.queue.clear()

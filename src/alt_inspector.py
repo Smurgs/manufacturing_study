@@ -56,7 +56,7 @@ class AltInspector(object):
         self.idle = True
         print('%.3f\t%s finished inspecting component %d' % (time, self.name, self.component.type))
         self.start_of_block = time
-        # Routing Algorithm (Round Robin)
+        # Routing Algorithm (Cstom Scheduling)
         component_placed = False
         if self.name == 'insp1':
             if len(self.component_queue) > 0:

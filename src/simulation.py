@@ -12,9 +12,9 @@ from src.Buffer import Buffer
 from src.WorkStation import WorkStation
 
 
-
-
 # Initialization
+i = 0
+__ = 0
 time = 0.0
 event_queue = []
 component_queue = []
@@ -23,10 +23,7 @@ b21 = Buffer('ws2_c1')
 b31 = Buffer('ws3_c1')
 b22 = Buffer('ws2_c2')
 b33 = Buffer('ws3_c3')
-# inspector1 = Inspector('insp1', [stats.expon(loc=0.09, scale=10.27)], event_queue, b11, b21, b31, b22, b33)
-# inspector2 = Inspector('insp2', [stats.expon(loc=0.13, scale=15.41), stats.expon(loc=0.03, scale=20.60)], event_queue, b11, b21, b31, b22, b33)
-inspector1 = AltInspector('insp1', [stats.expon(loc=0.09, scale=10.27)], event_queue, b11, b21, b31, b22, b33, component_queue)
-inspector2 = AltInspector('insp2', [stats.expon(loc=0.13, scale=15.41), stats.expon(loc=0.03, scale=20.60)], event_queue, b11, b21, b31, b22, b33, component_queue)
+
 ws1 = WorkStation('ws1', stats.expon(loc=0.01, scale=4.60), [b11], event_queue)
 ws2 = WorkStation('ws2', stats.expon(loc=0.09, scale=11.00), [b21, b22], event_queue)
 ws3 = WorkStation('ws3', stats.expon(loc=0.10, scale=8.69), [b31, b33], event_queue)
@@ -37,6 +34,17 @@ throughput = []
 total_idle_time = 0
 idle_probability = []
 TIME_UNITS = 100000
+total_throughput_mean = []
+system1_insp = []
+system2_insp = []
+system1_ws = []
+system2_ws = []
+
+inspector1 = Inspector('insp1', [stats.expon(loc=0.09, scale=10.27)], event_queue, b11, b21, b31, b22,
+                       b33)
+inspector2 = Inspector('insp2',
+                       [stats.expon(loc=0.13, scale=15.41), stats.expon(loc=0.03, scale=20.60)],
+                       event_queue, b11, b21, b31, b22, b33)
 
 
 def main():
@@ -86,25 +94,25 @@ def main():
     print('Confidence')
     print(confidence_interval(idle_probability))
 
-    # Plot throughput
-    plt.plot(throughput)
-    plt.title("Throughput over time at " + str(INTERVAL) + " intervals")
-    plt.xlabel("Time")
-    plt.ylabel("Throughput")
-    plt.show()
-
-    # Plot Idle Probability
-    plt.plot(idle_probability)
-    plt.title("Idle Probability of Inspectors over time at " + str(INTERVAL) + " intervals")
-    plt.xlabel("Time")
-    plt.ylabel("Idle Probability")
-    plt.show()
-
-    avg_sys_time = np.mean([x.system_time for x in ws1.completed_components])
-    avg_arrival_time = np.mean([x for x in b11.inter_arrival_times])
-    print('Average system time for components in workstation1: %.2f' % avg_sys_time)
-    print('Average arrival time for buffer_1_1: %.2f' % avg_arrival_time)
-    print(avg_sys_time * avg_arrival_time)
+    # # Plot throughput
+    # plt.plot(throughput)
+    # plt.title("Throughput over time at " + str(INTERVAL) + " intervals")
+    # plt.xlabel("Time")
+    # plt.ylabel("Throughput")
+    # plt.show()
+    #
+    # # Plot Idle Probability
+    # plt.plot(idle_probability)
+    # plt.title("Idle Probability of Inspectors over time at " + str(INTERVAL) + " intervals")
+    # plt.xlabel("Time")
+    # plt.ylabel("Idle Probability")
+    # plt.show()
+    #
+    # avg_sys_time = np.mean([x.system_time for x in ws1.completed_components])
+    # avg_arrival_time = np.mean([x for x in b11.inter_arrival_times])
+    # print('Average system time for components in workstation1: %.2f' % avg_sys_time)
+    # print('Average arrival time for buffer_1_1: %.2f' % avg_arrival_time)
+    # print(avg_sys_time * avg_arrival_time)
 
 
 def elapsed_interval(t):
@@ -135,4 +143,87 @@ def confidence_interval(data, confidence=0.95):
 
 
 if __name__ == '__main__':
-    main()
+    # Running the original system and the alternative system
+    while __ < 2:
+        while i < REPLICATIONS:
+            if __ == 0:
+                print("SYSTEM 1")
+                main()
+                system1_insp.append(inspector1.time_blocked + inspector2.time_blocked)
+                system1_ws.append(len(ws1.completed_components) + len(ws2.completed_components) + len(ws3.completed_components))
+
+            else:
+                print("SYSTEM 2")
+                main()
+                system2_insp.append(inspector1.time_blocked + inspector2.time_blocked)
+                system2_ws.append(
+                    len(ws1.completed_components) + len(ws2.completed_components) + len(ws3.completed_components))
+            i+=1
+        if __ == 0:
+            # Values Reset
+            time = 0.0
+            event_queue = []
+            component_queue = []
+            b11.reset()
+            b21.reset()
+            b31.reset()
+            b22.reset()
+            b33.reset()
+            product_count = 0
+            throughput = []
+            total_idle_time = 0
+            idle_probability = []
+            total_throughput_mean = []
+            inspector1 = AltInspector('insp1', [stats.expon(loc=0.09, scale=10.27)], event_queue, b11, b21, b31,
+                                      b22,
+                                      b33, component_queue)
+            inspector2 = AltInspector('insp2',
+                                      [stats.expon(loc=0.13, scale=15.41), stats.expon(loc=0.03, scale=20.60)],
+                                      event_queue, b11, b21, b31, b22, b33, component_queue)
+            i = 0
+        __ += 1
+
+    print("SIMULATION OUTPUT")
+    print(system1_insp)
+    print(system1_ws)
+    print(system2_insp)
+    print(system2_ws)
+
+    print("PERFORMING SIMULATION COMPARISONS")
+    system1_insp_mean = np.mean(system1_insp)
+    system1_ws_mean = np.mean(system1_ws)
+    system2_insp_mean = np.mean(system2_insp)
+    system2_ws_mean = np.mean(system2_ws)
+    print("Point Estimate for Inspectors: %.2f" % (system1_insp_mean - system2_insp_mean))
+    print("Point Estimate for Workstation: %.2f" % (system1_ws_mean - system2_ws_mean))
+    print("Sample Variance for System 1 Inspectors: %.2f" % (np.var(system1_insp_mean)))
+    print("Sample Variance for System 1 Workstations: %.2f" % (np.var(system1_ws_mean)))
+    print("Sample Variance for System 2 Inspectors: %.2f" % (np.var(system2_insp_mean)))
+    print("Sample Variance for System 2 Workstations: %.2f" % (np.var(system2_ws_mean)))
+
+    # Sample Variance for System
+
+
+
+    # Pooled Estimate of variance
+    pooled_estimate_insp = (((REPLICATIONS - 1)*(s1))) ** 2
+    pooled_estimate_ws = () ** 2
+
+    #Standard Errors
+    insp_se = sqrt(pooled_estimate_insp) * sqrt((1/REPLICATIONS)  + (1/REPLICATIONS))
+    ws_se = sqrt(pooled_estimate_ws) * sqrt((1/REPLICATIONS)  + (1/REPLICATIONS))
+
+    # C.Is
+    insp_ci = system1_insp_mean - system2_insp_mean
+    insp_error_rate = insp_se * stats.t.ppf((1 + 0.95) / 2., (REPLICATIONS * 2 - 2))
+    print("Confidence Interval for Inspectors are: %.2f" % insp_ci + "+/-" + "%.2f" % insp_error_rate)
+    ws_ci = system1_ws_mean - system2_ws_mean
+    ws_error_rate = ws_se * stats.t.ppf((1 + 0.95) / 2., (REPLICATIONS * 2 - 2))
+    print("Confidence Interval for Workstations are: %.2f" % ws_ci + "+/-" + "%.2f" % ws_error_rate)
+
+
+
+# 2 REPLICATIONS BOTH of systems
+# Slide 9 - CI (0,95 = alpha for t-stat), 12 v is dof ; s.e. Find Sp = R1 & R2 = 7 + 7
+# Numpy variance for Si and get the pooled variance and then SE and then t-stat and multiply with SE
+# Add the time blocked
